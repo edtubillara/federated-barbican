@@ -43,9 +43,8 @@ Barbican to be successful.
 1. Trust. An establishment of trust must be made between the two clouds.
    A possible solution is Keystone to Keystone Federation.
 
-2. Federation of secrets. There needs to be a way for a service to tell
-   Barbican the secret to be retrieved or created is not in the cloud
-   to which it is currently talking, but in another cloud.
+2. Federation of secrets. There needs to be a way for a service to retrieve
+   or create a key in a Barbican that resides in another cloud.
 
 *PENDING*
 
@@ -54,6 +53,7 @@ describe it as detailed as possible as a solution to the problems above.
 
 
 Alternatives
+(These are the solutions we have come up with so far.)
 ============
 
 * Proxy
