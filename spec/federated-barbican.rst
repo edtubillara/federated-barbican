@@ -19,6 +19,9 @@ Problem Description
 (Use Cases should be listed here as potential problems that can be solved with
 Federated Barbican. They need to be clearly explained.)
 
+We need specify the usecases for both single-tenant cloud (private cloud service) and multi-tenants cloud (public cloud service).
+The solution for two scenarios could be different. 
+
 There are a few problems that Federated Barbican can solve.
 
 * A client wants to bring their own keys. A client who wants to
