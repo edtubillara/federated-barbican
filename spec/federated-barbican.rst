@@ -11,30 +11,42 @@ Federated Barbican
 https://blueprints.launchpad.net/barbican/+spec/federated-barbican
 
 Currently, it is impossible to federate secrets between clouds.
-This blueprint proposes a way to allow Barbican to federate secrets
-between clouds.
+This blueprint proposes a solution to allow Barbican to connect to multiple
+clouds to federates its services.
 
 Problem Description
 ===================
 (Use Cases should be listed here as potential problems that can be solved with
 Federated Barbican. They need to be clearly explained.)
 
-We need specify the usecases for both single-tenant cloud (private cloud service) and multi-tenants cloud (public cloud service).
-The solution for two scenarios could be different. 
-
 There are a few problems that Federated Barbican can solve.
 
-* A client wants to bring their own keys. A client who wants to
-  utilize an HSM or KMIP device with Barbican yet does not want to remove
-  the device off-prem or buy another device in the cloud provider's data
-  center. Federated Barbican would allow a client to bring their own keys and
-  use the encryption services offered by the cloud provider.
+* A client wants to bring their own keys to a private cloud. A client who
+  wants to utilize an HSM or KMIP device with Barbican yet does not want to
+  remove the device off-prem or buy another device in the cloud provider's
+  data center. Federated Barbican would allow a client to bring their own keys
+  and use the encryption services offered by the cloud provider.
 
-* Hybrid Cloud Federation. A client with a hybrid cloud setup can decide
-  to use the Barbican services on a different cloud than the one on
-  which Barbican resides. This makes it possible for the client to use swift
-  encryption, glance encryption; block encryption, certificate management
-  services on a cloud which might not have a Barbican.
+* A client want to bring their own keys to a public cloud. This is a hybrid
+  cloud scenario. It is similar to the scenario above with the exception that
+  the customer will be connecting their on-prem device to a public cloud
+  instead of a dedicated one. The public cloud infrastructure is different
+  than a private one and will most likely offer additional challenges not
+  apparent for a customer who wants to bring their own keys to a fully
+  dedicated cloud.
+
+* Limited HSM or KMIP availability. It is common for the HSM's or KMIP devices
+  to be located in very few data centers. This scenario necessitates cloud
+  service providers the ability to leverage different HSM's or KMIP devices
+  in another public cloud, and hence a separate Barbican. Federated Barbican
+  can provide data centers around the world a chance to use an HSM or KMIP
+  device located on another Barbican in another cloud.
+
+* Scalability. Federated Barbican allows for horizontal scaling across
+  different clouds. If another Barbican is needed but the resources on a
+  cloud are full, federated Barbican allows the cloud provider to leverage a
+  Barbican located in a different cloud to meet the resource demands of
+  any cloud.
 
 
 Proposed Change
@@ -46,8 +58,8 @@ Barbican to be successful.
 1. Trust. An establishment of trust must be made between the two clouds.
    A possible solution is Keystone to Keystone Federation.
 
-2. Federation of secrets. There needs to be a way for a service to retrieve
-   or create a key in a Barbican that resides in another cloud.
+2. Federation of secrets. There needs to be a way for another service to
+   leverage Barbican's services in another cloud.
 
 *PENDING*
 
@@ -56,8 +68,8 @@ describe it as detailed as possible as a solution to the problems above.
 
 
 Alternatives
-(These are the solutions we have come up with so far.)
 ============
+(These are the solutions we have come up with so far.)
 
 * Proxy
 
