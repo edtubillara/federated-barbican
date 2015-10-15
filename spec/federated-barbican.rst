@@ -96,4 +96,8 @@ Alternatives
 
 * Use Castellen
 
-  * Elvin's proposal. Explanation needs to go here.
+  * Create a new federated barbican key manager in castellan. We would
+    change the barbican client to be flexible and be able to connect to
+    any barbican instance. The goal of the federated key manager would
+    be to control which host a barbican request would flow to. 
+    #TODO: Give more details
