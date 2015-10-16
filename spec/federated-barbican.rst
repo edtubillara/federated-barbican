@@ -17,7 +17,8 @@ clouds to federates its services.
 Problem Description
 ===================
 (Use Cases should be listed here as potential problems that can be solved with
-Federated Barbican. They need to be clearly explained.)
+Federated Barbican. They need to be clearly explained.) 
+
 
 There are a few problems that Federated Barbican can solve.
 
@@ -96,8 +97,13 @@ Alternatives
 
 * Use Castellen
 
-  * Create a new federated barbican key manager in castellan. We would
-    change the barbican client to be flexible and be able to connect to
-    any barbican instance. The goal of the federated key manager would
-    be to control which host a barbican request would flow to. 
-    #TODO: Give more details
+  * Create a new federated barbican key manager in Castellan. We would
+    change the barbican client library to be flexible and be able to connect to
+    any barbican instance given federated parameters. The goal of the federated key manager would
+    be to expose APIs that could control which host a barbican request would flow to. 
+
+Elvin's Notes:
+==============
+BYOK does not entirely get solved through BYOD(Federated Barbican), the other openstack services (cinder, swift)
+have to implement importing customer keys for encryption.
+
