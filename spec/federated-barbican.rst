@@ -100,7 +100,8 @@ Alternatives
   * Create a new federated barbican key manager in Castellan. We would
     change the barbican client library to be flexible and be able to connect to
     any barbican instance given federated parameters. The goal of the federated key manager would
-    be to expose APIs that could control which host a barbican request would flow to. 
+    be to expose library APIs that could control which host a barbican request would flow to. 
+    #TODO add more details
 
 Elvin's Notes:
 ==============
