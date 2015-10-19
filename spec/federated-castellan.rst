@@ -52,6 +52,12 @@ to connect to the given barbican.
 
 Architecture 2: Federated Barbican Oblivious Services
 =====================================================
-The APIs for the current Barbican KeyManager will not be changed.
-
+The APIs for the current Barbican KeyManager will not be changed. Automation of directing
+key operations to barbican hosts will be built around policies that define mappings for
+tenants to barbican hosts. A new module for automating federation will be created. 
+When a scoped token is provided from a user, it will be used to create SAML assertions
+across the two given keystones (one identity provider and one service provider). An
+unscoped token will be returned and a scoped token to access a particular barbican 
+host will be returned. This mapping for tenants to barbican hosts will be defined in
+a new file called /etc/castellan/policy.json. 
 
