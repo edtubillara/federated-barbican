@@ -23,8 +23,8 @@ Federated Aware Services vs Federated Oblivious Services
 ========================================================
 * Federated Aware Services (which do not currently exist) are OpenStack services that have
   control over where to store a barbican secret. The federated key manager's APIs
-  would be called with a link to the host and a scoped token to authenticate to the 
-  needed barbican would also be provided.
+  would provide parameters that include a link to the specific barbian 
+  host and a scoped token.
 
 * Federated Oblivious Services are OpenStack services that do not know that
   federated barbican is being used under the hood. The APIs that they call
@@ -32,5 +32,26 @@ Federated Aware Services vs Federated Oblivious Services
   have to call the APIs differently). A mapping between project-id to a barbican host is
   required to automate the request flow and for keystone to keystone federation.
 
-Architecture
-============
+Architecture 1: Federated Barbican Aware Services 
+=================================================
+The APIs for the current Barbican KeyManager will be expanded to include target host (keyhost_url)
+and a scoped token (host_auth).
+
+create_key(self, context, algorithm, length, expiration=None, name=None, keyhost_url, host_auth)
+create_key_pair(self, context, algorithm, length, expiration=None, name=None,  keyhost_url, host_auth):
+store(self, context, managed_object, expiration=None, keyhost_url, host_auth):
+get(self, context, managed_object_id, keyhost_url, host_auth)
+delete(self, context, managed_object_id, keyhost_url, host_auth)
+
+This implies that the service that uses the federated castellan library will need to keep
+track of which barbican host has the key and provide the scoped token to authenticate to it.
+
+Once provided with the federated parameters, a barbican client instance will be created
+to connect to the given barbican.
+
+
+Architecture 2: Federated Barbican Oblivious Services
+=====================================================
+The APIs for the current Barbican KeyManager will not be changed.
+
+
