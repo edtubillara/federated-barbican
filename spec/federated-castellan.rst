@@ -5,23 +5,25 @@ Federated Castellan Barbican Key Manager
 Overview
 ========
 * The goal of the Federated Castellan Barbican Key Manager is to change existing code
-  as least as possible. The barbican client and barbican key manager would be changed to be flexible
-  enough to be able to connect to any barbican instance if host and 
-  authentication parameters are given. A new federated key manager would then create
-  instances of the flexible barbican key manager to connect to a specific barbican host.
+  as least as possible. The barbican client would be changed to be flexible
+  enough to be able to connect to any barbican instance if the barbican host url and 
+  authentication parameters are provided. A new federated barbican key manager would then create
+  instances of the flexible barbican clientto connect to a specific barbican host.
   There are two high level architecture designs.
 
 Establishing trust
 ==================
-* Keystone to Keystone federation will be used. A new module to automate this will be created.
+* Keystone to Keystone federation will be used. There will be a Identity Provider
+  Keystone and a Service Provider Keystone. 
 
 Federation of secrets
 =====================
-* Castellan will be in charge of forwarding the request to the right barbican. 
+* A federated version of the barbican key manager in Castellan 
+  will be in charge of forwarding the request to the right barbican. 
 
-Federated Aware Services vs Federated Oblivious Services
-========================================================
-* Federated Aware Services (which do not currently exist) are OpenStack services that have
+Federated Barbican Aware Services vs Federated Barbican Oblivious Services
+==========================================================================================
+* Federated Barbican Aware Services (which do not currently exist) are OpenStack services that have
   control over where to store a barbican secret. The federated key manager's APIs
   would provide parameters that include a link to the specific barbian 
   host and a scoped token.
@@ -32,36 +34,49 @@ Federated Aware Services vs Federated Oblivious Services
   have to call the APIs differently). A mapping between project-id to a barbican host is
   required to automate the request flow and for keystone to keystone federation.
 
-Architecture 1: Federated Barbican Aware Services
+Type 1: Federated Barbican Aware Services
 =================================================
-The APIs for the current Barbican KeyManager will be expanded to include target host (keyhost_url)
-and a scoped token (host_auth).
+* The APIs for the current Barbican KeyManager will be expanded to include target host (keyhost_url)
+  and a scoped token (host_auth).
 
-create_key(self, context, algorithm, length, expiration=None, name=None, keyhost_url, host_auth)
-create_key_pair(self, context, algorithm, length, expiration=None, name=None,  keyhost_url, host_auth):
-store(self, context, managed_object, expiration=None, keyhost_url, host_auth):
-get(self, context, managed_object_id, keyhost_url, host_auth)
-delete(self, context, managed_object_id, keyhost_url, host_auth)
+* create_key(self, context, algorithm, length, expiration=None, name=None, keyhost_url, host_auth)
+  create_key_pair(self, context, algorithm, length, expiration=None, name=None,  keyhost_url, host_auth):
+  store(self, context, managed_object, expiration=None, keyhost_url, host_auth):
+  get(self, context, managed_object_id, keyhost_url, host_auth)
+  delete(self, context, managed_object_id, keyhost_url, host_auth)
 
-This implies that the service that uses the federated castellan library will need to keep
-track of which barbican host has the key and provide the scoped token to authenticate to it.
+*  This implies that the service that uses the federated castellan library will need to keep
+   track of which barbican host has the key and provide the scoped token to authenticate to it.
 
-Once provided with the federated parameters, a barbican client instance will be created
-to connect to the given barbican.
+*  Once provided with the federated parameters, a barbican client instance will be created
+   to connect to the given barbican.
 
 
 .. image:: images/federatedawareservices.jpg
 
-Architecture 2: Federated Barbican Oblivious Services
+Type 2: Federated Barbican Oblivious Services
 =====================================================
-The APIs for the current Barbican KeyManager will not be changed. Automation of directing
-key operations to barbican hosts will be built around policies that define mappings for
-tenants to barbican hosts. A new module for automating federation will be created. 
-When a scoped token is provided from a user, it will be used to create SAML assertions
-across the two given keystones (one identity provider and one service provider). An
-unscoped token will be returned and a scoped token to access a particular barbican 
-host will be returned. This mapping for tenants to barbican hosts will be defined in
-a new file called /etc/castellan/policy.json. 
+*  The APIs for the current Barbican KeyManager will not be changed. Automation of directing
+   key operations to barbican hosts will be built around policies that define mappings for
+   tenants to barbican hosts. A new module for automating federation will be created. 
+   When a scoped token is provided from a user, it will be used to create SAML assertions
+   across the two given keystones (one identity provider and one service provider). An
+   unscoped token will be returned and a scoped token to access a particular barbican 
+   host will be returned. A new barbican client will then be created with the barbican host
+   and token. This mapping for tenants to barbican hosts will be defined in
+   a new file called /etc/barbican/castellan-policy.json. 
 
+* castellan-policy.json example: 
+
+  .. code-block:: JSON
+  
+    {   
+       "tenant-name or tenant-id":
+       { 
+            "keystone-identity-provider": "{keystone-identity-provider-info}",
+            "keystone-service-provider": "{keystone-service-provider-info}",
+            "barbican_host": "{barbican-host-info}"
+       }
+    }
 
 .. image:: images/federatedobliviousservices.jpg
