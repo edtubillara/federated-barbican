@@ -28,7 +28,7 @@ Federated Barbican Aware Services vs Federated Barbican Oblivious Services
   would provide parameters that include a link to the specific barbian 
   host and a scoped token.
 
-* Federated Oblivious Services are OpenStack services that do not know that
+* Federated Barbican Oblivious Services are OpenStack services that do not know that
   federated barbican is being used under the hood. The APIs that they call
   match the current libarary APIs for the Castellan Barbican Key Manager (So they don't
   have to call the APIs differently). A mapping between project-id to a barbican host is
