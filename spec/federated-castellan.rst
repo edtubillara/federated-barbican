@@ -32,7 +32,7 @@ Federated Aware Services vs Federated Oblivious Services
   have to call the APIs differently). A mapping between project-id to a barbican host is
   required to automate the request flow and for keystone to keystone federation.
 
-Architecture 1: Federated Barbican Aware Services 
+Architecture 1: Federated Barbican Aware Services
 =================================================
 The APIs for the current Barbican KeyManager will be expanded to include target host (keyhost_url)
 and a scoped token (host_auth).
@@ -50,6 +50,8 @@ Once provided with the federated parameters, a barbican client instance will be 
 to connect to the given barbican.
 
 
+.. image:: images/federatedawareservices.jpg
+
 Architecture 2: Federated Barbican Oblivious Services
 =====================================================
 The APIs for the current Barbican KeyManager will not be changed. Automation of directing
@@ -61,3 +63,5 @@ unscoped token will be returned and a scoped token to access a particular barbic
 host will be returned. This mapping for tenants to barbican hosts will be defined in
 a new file called /etc/castellan/policy.json. 
 
+
+.. image:: images/federatedobliviousservices.jpg
