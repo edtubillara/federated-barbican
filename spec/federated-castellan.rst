@@ -75,12 +75,15 @@ Type 2: Federated Barbican Oblivious Services
   .. code-block:: JSON
   
     {   
-       "tenant-name or tenant-id":
-       { 
+       "tenant-name or tenant-id":{ 
             "keystone-identity-provider": "{keystone-identity-provider-info}",
             "keystone-service-provider": "{keystone-service-provider-info}",
             "barbican_host": "{barbican-host-info}"
-       }
+       },
+      "tenant-name2 or tenant-id2":{
+            "keystone-identity-provider": "{keystone-identity-provider-info2}",
+            "keystone-service-provider": "{keystone-service-provider-info2}",
+            "barbican_host": "{barbican-host-info2}"
     }
 
 .. image:: images/federatedobliviousservices.jpg
