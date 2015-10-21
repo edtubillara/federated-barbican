@@ -36,14 +36,18 @@ Federated Barbican Aware Services vs Federated Barbican Oblivious Services
 
 Type 1: Federated Barbican Aware Services
 =================================================
-* The APIs for the current Barbican KeyManager will be expanded to include target host (keyhost_url)
-  and a scoped token (host_auth).
+* The APIs for the federated barbican keymanager will expand on the current Barbican KeyManager 
+  to include target host (keyhost_url) and a scoped token (host_auth).
 
-* create_key(self, context, algorithm, length, expiration=None, name=None, keyhost_url, host_auth)
-  create_key_pair(self, context, algorithm, length, expiration=None, name=None,  keyhost_url, host_auth):
-  store(self, context, managed_object, expiration=None, keyhost_url, host_auth):
-  get(self, context, managed_object_id, keyhost_url, host_auth)
-  delete(self, context, managed_object_id, keyhost_url, host_auth)
+* example api extended:
+
+  .. code-block:: python
+
+    create_key(self, context, algorithm, length, keyhost_url, host_auth, expiration=None, name=None)
+    create_key_pair(self, context, algorithm, length, keyhost_url, host_auth, expiration=None, name=None)
+    store(self, context, managed_object, keyhost_url, host_auth, expiration=None)
+    get(self, context, managed_object_id, keyhost_url, host_auth)
+    delete(self, context, managed_object_id, keyhost_url, host_auth)
 
 *  This implies that the service that uses the federated castellan library will need to keep
    track of which barbican host has the key and provide the scoped token to authenticate to it.
