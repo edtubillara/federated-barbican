@@ -1,0 +1,72 @@
+Barbican Federation using links
+Barbican needs a way of accessing secrets from other Barbican's in a seamless manner. This can be achieved through federation. This design document goes over using “links” in order to achieve this. It has minimal impact on the Barbican code base. This document will show the different processes which can be done on the public as well as private Barbican. Barbican can be managed on premise.
+Keystone Authentication Flow: 
+Due to the Keystone authentication flow for federation, it will be a little tricky to automate obtaining a secret from a Barbican on one cloud to another. This is because each cloud will have Barbican secrets under different tenants, In other words tenants are not 1-1 on different cloud instances. 
+	.	1.)  Get an unscoped token: You get this token by sending a request with your credential from the keystone you are authenticated on to a new keystone.  
+	.	2.)  Determine accessible resources (Projects, Domains), a user can belong to multiple: Once you have the unscoped token, you need to know which project you want to access.  
+	.	3.)  Get a scoped token: Use the resources you have obtained to request a token scoped toward a certain resource.  
+The user in the Keystone setup for Federation must have access to the tenant. This is done through mappings. More information on mappings can be found on: http://docs.openstack.org/developer/keystone/mapping_combinations.html
+In order for any of this to work keystone federation must be setup properly. 
+Barbican API Change and Impact: Secret POST 
+POST /v1/secrets
+Headers:
+    Content-Type: application/json
+    X-Project-Id: {project_id}
+Content: { 
+    "name": "AES key",
+    "algorithm": "aes",
+    "bit_length": 256,
+    "mode": "cbc",
+    "payload": "https://{barbican_host}/v1/secrets/{secret_uuid}",
+    "payload_content_type": "link",
+    "payload_tenant_id": "0cd5e9"
+} 
+When a new secret is created, there will be a new payload_content_type called link. The payload will be a link to another Barbican. The payload_tenant_id will be used in order for us to know under what tenant the secret is located. Note that this is for creating a secret on a Public Barbican, and the user must know where the secret is in the Private Barbican.
+When accessing the secret we can alway pass the unstopped token and it will be scoped to payload_tenant_id.
+201 Created 
+{
+    "secret_ref": "https://{barbican_host}/v1/secrets/{secret_uuid}"
+} 
+Server Codes
+201: Successfully created a Secret 
+400: Bad Request 
+401: Invalid X-Auth-Token or the token doesn’t have permissions to this resource
+403: Forbidden. The user has been authenticated, but is not authorized to create a secret. This can be based on the the user’s role or the project’s quota. 
+415: Unsupported media-type 
+Secret GET 
+When this GET is called, if the payload_content_type of the secret is a link, then we perform the GET on the payload which is a link, this will return the payload in the Private Barbican. Note: It will use payload_tenant_id in the secret meta-data to automate the federation flow. The unscoped token must be passed as the X-Auth-Token.
+GET /v1/secrets/{uuid}
+Headers:
+    Accept: application/octet-stream
+    X-Project-Id: {project_id}
+200 OK
+whoa!!!
+
+Description 
+200: Successful request 
+401: Invalid X-Auth-Token or the token doesn’t have permissions to this resource 
+404: Not Found 
+406: Not Acceptable 
+Additional Barbican Client Code: 
+The following can be used so that when a secret is created in the Private Barbican it is also created in the Public Barbican as a link. This can be easily integrated with nova, swift, etc. 
+def create_federated_link(self): 
+Secret does not exist 
+#1.) Creates the Secret on the Private Barbican 
+#2.) Creates the Link on the Public Barbican 
+or
+ Secret exists 
+#1.) Creates the Link on the Public Barbican 
+Additional Code: 
+The following is needed in order to automated the keystone federation flow. 
+def keystone_federation_automate(self, tenant_id): 
+#1.) Grabs unscoped token using items in keystone env. #2.) Scopes user to tenant_id provided which is passed from Secret meta-data. 
+#3.) Returns scoped_token 
+
+
+
+Swift Usage
+How swift uses the keys. In order for swift to access keys from the Public to Private Cloud it must be able to check if the provided secret is a link. If yes then the unstopped token must be provided in order for it to be accessed.
+Other Consideration
+The depth of the linking must be tracked. We should limit the depth to one.
+
+Disclaimer: The code above is just a rough draft, not to be considered as final form. 
